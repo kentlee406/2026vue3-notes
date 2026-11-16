@@ -1,0 +1,154 @@
+[🏠 回到首頁](../../README.md)
+
+# 02-快速入門 Vue.js：商品後台管理介面
+
+## 一、Vue.js 簡介
+
+### 起源
+
+- 作者：**尤雨溪（Evan You）**，前 Google 工程師，曾參與 AngularJS 專案。
+- 2014 年釋出初版。動機是「抽出 Angular 中自己喜歡的部分，做一個更輕量的框架」。
+- 目前由開源社群與核心團隊共同維護。
+
+### 發展
+
+| 版本   | 年份 | 重點                                                                 |
+| ------ | ---- | -------------------------------------------------------------------- |
+| Vue 1  | 2015 | 初代版本，雙向綁定與模板語法                                         |
+| Vue 2  | 2016 | 引入 Virtual DOM、Options API，廣泛使用                              |
+| Vue 3  | 2020 | Composition API、Proxy 響應式、效能提升、TypeScript 支援更好         |
+| Vue 3 預設版本 | 2022 | Vue 3 成為官方預設版本，Vue 2 於 2023/12/31 停止維護（EOL） |
+
+### 特色
+
+- **漸進式框架（Progressive Framework）**：可只用 CDN 引入在單一頁面使用，也能搭配 Vite、Router、Pinia 組成大型 SPA。
+- **響應式資料（Reactivity）**：資料改變，畫面自動更新。
+- **模板語法直覺**：以 HTML 為基礎，搭配指令（`v-` 開頭）操作畫面。
+- **元件化**：把畫面拆成可重複使用的元件。
+- **輕量、易上手**：學習曲線平緩，中文資源豐富。
+
+### 應用
+
+- 後台管理系統（本課程範例：商品後台管理介面）
+- 單頁應用（SPA）、電商網站、儀表板（Dashboard）
+- 搭配 Nuxt 可做 SSR / SSG，利於 SEO
+- 搭配 Capacitor、Electron 等可開發 App / 桌面程式
+
+### 文件列表
+
+| 名稱                  | 說明                       | 連結                                   |
+| --------------------- | -------------------------- | -------------------------------------- |
+| Vue 3 官方文件        | 英文版，內容最完整         | https://vuejs.org/                     |
+| Vue 3 官方文件（中文）| 簡體中文版                 | https://cn.vuejs.org/                  |
+| Vue Router            | 路由管理                   | https://router.vuejs.org/              |
+| Pinia                 | 狀態管理                   | https://pinia.vuejs.org/               |
+| Vite                  | 建置工具                   | https://vite.dev/                      |
+| Vue Playground        | 線上即時練習               | https://play.vuejs.org/                |
+
+---
+
+## 二、關注點分離 vs. MVVM
+
+### 原生 JS：關注點分離（Separation of Concerns）
+
+依「技術類型」拆分：HTML 負責結構、CSS 負責樣式、JavaScript 負責行為。
+
+```html
+<ul id="list"></ul>
+<input id="input" type="text" />
+<button id="btn">新增</button>
+
+<script>
+  const list = document.querySelector("#list");
+  const input = document.querySelector("#input");
+  const btn = document.querySelector("#btn");
+
+  btn.addEventListener("click", () => {
+    const li = document.createElement("li");
+    li.textContent = input.value;
+    list.appendChild(li);
+    input.value = "";
+  });
+</script>
+```
+
+- **缺點**：需要手動 `querySelector` 找 DOM、手動更新畫面；資料與畫面各自獨立，狀態容易不同步，專案變大後難以維護。
+
+### Vue：MVVM（Model - View - ViewModel）
+
+| 角色      | 說明                                             | 對應 Vue                          |
+| --------- | ------------------------------------------------ | --------------------------------- |
+| Model     | 資料                                             | `data()` 中的資料                 |
+| View      | 畫面                                             | 模板（Template / HTML）           |
+| ViewModel | 連接 Model 與 View，負責資料與畫面的同步         | Vue 實例（響應式系統與指令）      |
+
+```
+ View  ⇄  ViewModel (Vue)  ⇄  Model
+ 畫面     自動同步            資料
+```
+
+```html
+<div id="app">
+  <ul>
+    <li v-for="item in list">{{ item }}</li>
+  </ul>
+  <input type="text" v-model="text" />
+  <button @click="add">新增</button>
+</div>
+
+<script>
+  Vue.createApp({
+    data() {
+      return { text: "", list: [] };
+    },
+    methods: {
+      add() {
+        this.list.push(this.text);
+        this.text = "";
+      },
+    },
+  }).mount("#app");
+</script>
+```
+
+### 差異比較
+
+| 項目         | 原生 JS（關注點分離）        | Vue（MVVM）                    |
+| ------------ | ---------------------------- | ------------------------------ |
+| 思維         | 操作 DOM（命令式）           | 操作資料（宣告式）             |
+| 更新畫面     | 手動修改 DOM                 | 資料改變，畫面自動更新         |
+| 資料與畫面   | 各自獨立，需自行同步         | 由 ViewModel 自動綁定          |
+| 程式碼組織   | 依技術（HTML / CSS / JS）    | 依功能（元件）                 |
+| 維護性       | 專案變大後較難維護           | 結構清晰，易於擴充             |
+
+> 重點：**不再手動操作 DOM，只需要專注於「資料」的變化。**
+
+---
+
+## 三、安裝 Vue 開發者工具（Vue DevTools）
+
+### 用途
+
+- 檢視元件樹、`data`、`props`、`computed` 等狀態。
+- 即時修改資料，觀察畫面變化。
+- 檢視事件、路由（Router）、狀態管理（Pinia）。
+
+### 安裝步驟（Chrome 擴充功能）
+
+1. 開啟 Chrome 線上應用程式商店，搜尋「**Vue.js devtools**」。
+2. 點擊「**加到 Chrome**」並確認新增擴充功能。
+3. 到 `chrome://extensions/` 找到 Vue.js devtools，點擊「詳細資料」。
+4. 開啟「**允許存取檔案網址**」（使用本機 `file://` 開啟 HTML 時必須開啟）。
+5. 若使用 `file://` 開啟網頁，可視需要開啟「在無痕模式中允許」。
+
+### 使用方式
+
+1. 開啟使用 Vue 的網頁，按 `F12` 開啟開發者工具。
+2. 切換到 **Vue** 分頁。
+3. 在 **Components** 中選取元件，即可檢視與編輯 `data`。
+
+### 注意事項
+
+- 擴充功能圖示亮起（彩色）代表偵測到 Vue；灰色代表該頁面未使用 Vue。
+- 以 CDN 引入的正式（production）版本 Vue 預設不會啟用 DevTools，開發時請使用開發版。
+- 修改擴充功能設定後，需重新整理頁面才會生效。
