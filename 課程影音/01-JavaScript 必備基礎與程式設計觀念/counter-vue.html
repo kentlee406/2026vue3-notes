@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>計數器 (Vue)</title>
+  </head>
+  <body>
+    <!-- 畫面：Vue 會把這個區塊當作模板 -->
+    <div id="app">
+      <div>{{ count }}</div>
+      <button type="button" @click="add">+1</button>
+    </div>
+
+    <!-- 引入 Vue 3 (CDN) -->
+    <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.prod.js"></script>
+    <!-- 資料、事件處理（畫面更新由 Vue 自動處理） -->
+    <script>
+      const { createApp, ref } = Vue;
+
+      createApp({
+        setup() {
+          // 資料
+          const count = ref(0);
+          // 事件處理
+          const add = () => {
+            count.value++;
+          };
+          // 提供給模板使用
+          return { count, add };
+        },
+      }).mount("#app");
+    </script>
+  </body>
+</html>

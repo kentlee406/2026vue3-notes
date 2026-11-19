@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>計數器 (HTML)</title>
+  </head>
+  <body>
+    <!-- 畫面 -->
+    <div>
+      <div id="count"></div>
+      <button type="button" id="add">+1</button>
+    </div>
+    <!-- 資料、事件處理與畫面更新 -->
+    <script>
+      // 資料：紀錄目前的數值
+      let count = 0;
+
+      // 畫面元素
+      const countEl = document.getElementById("count");
+      const addBtn = document.getElementById("add");
+
+      // 畫面渲染
+      function render() {
+        countEl.textContent = count;
+      }
+
+      // 事件處理
+      addBtn.addEventListener("click", () => {
+        count++;
+        render();
+      });
+
+      render();
+    </script>
+  </body>
+</html>
