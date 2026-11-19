@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>計數器</title>
+</head>
+<body>
+  <div id="app">
+    <h1>計數器</h1>
+    <p>目前數字：{{ count }}</p>
+    <button type="button" @click="add">+1</button>
+  </div>
+
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.prod.js"></script>
+  <script>
+    const { createApp, ref, onMounted } = Vue;
+
+    createApp({
+      setup() {
+        // 1. 資料：畫面需要的資料
+        const count = ref(0);
+
+        // 2. 功能：使用者操作時要做的事
+        const add = () => {
+          count.value++;
+        };
+
+        // 3. 生命週期：元件顯示到畫面後執行
+        onMounted(() => {
+          console.log('元件已顯示到畫面上');
+        });
+
+        return { count, add };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MVVM 範例</title>
+</head>
+<body>
+  <div id="app">
+    <!-- View：使用者看到並操作的畫面 -->
+    <label>姓名：<input type="text" v-model="name"></label>
+    <p>你好，{{ name }}！</p>
+  </div>
+
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.prod.js"></script>
+  <script>
+    const { createApp, ref } = Vue;
+
+    createApp({
+      setup() {
+        // Model：應用程式的資料；ref() 讓它成為「響應式資料」
+        const name = ref('Anna');
+
+        // ViewModel：把 Model 回傳給模板，v-model 會負責雙向同步
+        return { name };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>
