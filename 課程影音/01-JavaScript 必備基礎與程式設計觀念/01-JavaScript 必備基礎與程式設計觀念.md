@@ -314,3 +314,314 @@ userObj ─────▶ 位址#002 { name: "Linda" }   ← 新物件，函式
 4. `const` 只保證「位址不變」，不保證「內容不變」。
 5. 關注點分離：把**資料、畫面、事件**分開思考。
 6. Vue 讓我們只專注在「資料」，畫面由框架自動同步。
+
+---
+
+## 📝 練習題
+
+> 範圍：1.1 值與參考、1.2 關注點分離與前端程式結構
+> 建議做法：先自己作答，再展開「答案與詳解」對照。
+
+---
+
+### 一、選擇題（共 8 題）
+
+#### Q1. 下列哪一個**不是**基本型別（Primitive）？
+
+- (A) `"Kent"`
+- (B) `null`
+- (C) `[1, 2, 3]`
+- (D) `10n`（bigint）
+
+<details>
+<summary>答案與詳解</summary>
+
+**答案：(C)**
+
+陣列屬於物件型別。基本型別共七種：`string`、`number`、`boolean`、`undefined`、`null`、`bigint`、`symbol`。(D) 的 `10n` 是 `bigint`，(B) `null` 也是基本型別。
+
+</details>
+
+#### Q2. 執行下列程式後，`a` 與 `b` 的值為何？
+
+```js
+let a = 10;
+let b = a;
+b = 20;
+console.log(a, b);
+```
+
+- (A) `10 10`
+- (B) `20 20`
+- (C) `10 20`
+- (D) `20 10`
+
+<details>
+<summary>答案與詳解</summary>
+
+**答案：(C)**
+
+基本型別複製的是「值」，`b = a` 之後兩者各自擁有一份 `10`，修改 `b` 不會影響 `a`。
+
+</details>
+
+#### Q3. 執行下列程式後，輸出為何？
+
+```js
+const aUser = { name: "Kent" };
+const bUser = aUser;
+bUser.name = "Cindy";
+console.log(aUser.name, aUser === bUser);
+```
+
+- (A) `"Kent" false`
+- (B) `"Cindy" true`
+- (C) `"Kent" true`
+- (D) `"Cindy" false`
+
+<details>
+<summary>答案與詳解</summary>
+
+**答案：(B)**
+
+物件型別複製的是「參考（位址）」，`aUser` 與 `bUser` 指向同一個物件，所以改 `bUser.name`，`aUser.name` 也跟著變，且 `===` 比較的是位址，結果為 `true`。
+
+</details>
+
+#### Q4. 關於 `const` 的敘述，何者正確？
+
+- (A) `const` 宣告的物件，內容完全不能修改
+- (B) `const` 鎖住的是變數裡的「位址」，不能重新賦值，但物件內容可以改
+- (C) `const` 只適用於基本型別
+- (D) `const` 宣告的變數可以重新賦值成新物件
+
+<details>
+<summary>答案與詳解</summary>
+
+**答案：(B)**
+
+`const user = {}` 之後，`user.name = "x"` 可以執行（改內容），但 `user = {}` 會報錯（換位址）。(A)(D) 與此相反，(C) 錯誤，`const` 可用於任何型別。
+
+</details>
+
+#### Q5. 執行下列程式後，`console.log(eUser)` 輸出為何？
+
+```js
+const eUser = { name: "Kent" };
+
+function change(userObj) {
+  userObj = { name: "Linda" };
+}
+
+change(eUser);
+console.log(eUser);
+```
+
+- (A) `{ name: "Linda" }`
+- (B) `{ name: "Kent" }`
+- (C) `undefined`
+- (D) 報錯
+
+<details>
+<summary>答案與詳解</summary>
+
+**答案：(B)**
+
+函式內的 `userObj = {...}` 是「重新賦值」，只是讓函式內的 `userObj` 改指向新物件，原本的 `eUser` 指向的物件完全沒被動到。口訣：**改內容會影響大家；換位址只影響自己。**
+
+</details>
+
+#### Q6. 下列程式輸出為何？
+
+```js
+const aUser = { name: "Kent", skills: ["JS", "HTML"] };
+const cUser = { ...aUser };
+cUser.name = "Amy";
+cUser.skills.push("CSS");
+console.log(aUser.name, aUser.skills);
+```
+
+- (A) `"Kent" ["JS", "HTML"]`
+- (B) `"Amy" ["JS", "HTML", "CSS"]`
+- (C) `"Kent" ["JS", "HTML", "CSS"]`
+- (D) `"Amy" ["JS", "HTML"]`
+
+<details>
+<summary>答案與詳解</summary>
+
+**答案：(C)**
+
+展開運算子 `{ ...aUser }` 是**淺層複製**：第一層屬性（`name`）是各自獨立的值，所以 `aUser.name` 維持 `"Kent"`；但 `skills` 是陣列（物件），複製的是位址，兩者共用同一個陣列，`push("CSS")` 會同時影響 `aUser.skills`。想完全獨立要用 `structuredClone`。
+
+</details>
+
+#### Q7. 下列哪一項**最符合**「關注點分離」中三種責任的對應？
+
+- (A) 資料＝`<button>`、畫面＝`count`、事件＝`<div>`
+- (B) 資料＝`count`、畫面＝`<div>` 與 `<button>`、事件＝按下按鈕後 `count + 1`
+- (C) 資料＝按下按鈕、畫面＝`count`、事件＝`<div>`
+- (D) 資料、畫面、事件都應寫在同一處以方便閱讀
+
+<details>
+<summary>答案與詳解</summary>
+
+**答案：(B)**
+
+- 資料（State）：現在的狀態，例如 `count`
+- 畫面（View）：資料長什麼樣子，例如 `<div>`、`<button>`
+- 事件處理（Action）：使用者做了什麼、資料怎麼變
+
+(D) 剛好相反，全部纏在一起就是「義大利麵程式碼」。
+
+</details>
+
+#### Q8. 關於原生 JavaScript 與 Vue 計數器的差異，何者**錯誤**？
+
+- (A) 原生 JS 是命令式，Vue 是宣告式
+- (B) 原生 JS 資料改變後，需手動呼叫 `render()` 更新畫面
+- (C) Vue 的 `ref` 在 `<script>` 中讀寫要用 `.value`
+- (D) Vue 中資料改變後，仍需手動操作 DOM 才能更新畫面
+
+<details>
+<summary>答案與詳解</summary>
+
+**答案：(D)**
+
+Vue 具備響應式，資料改變後畫面會自動更新，不需手動操作 DOM。核心概念是 **畫面 = f(資料)**。
+
+</details>
+
+---
+
+### 二、實作題（共 2 題）
+
+#### 實作 1：物件複製與修改
+
+請依照下列需求，補完程式碼，使最後的 `console.log` 輸出與註解相同。
+
+```js
+const original = {
+  name: "Kent",
+  skills: ["JavaScript", "HTML"],
+};
+
+// (1) 建立 sameRef：與 original 共用同一個物件
+// (2) 建立 shallow：用展開運算子做淺層複製
+// (3) 建立 deep：做深層複製，與 original 完全獨立
+
+sameRef.name = "Cindy";
+shallow.skills.push("CSS");
+deep.skills.push("Vue");
+
+console.log(original.name);   // "Cindy"
+console.log(original.skills); // ["JavaScript", "HTML", "CSS"]
+console.log(deep.skills);     // ["JavaScript", "HTML", "Vue"]
+console.log(original === sameRef); // true
+```
+
+並回答：為什麼 `deep.skills.push("Vue")` 不會影響 `original.skills`？
+
+<details>
+<summary>答案與詳解</summary>
+
+```js
+const original = {
+  name: "Kent",
+  skills: ["JavaScript", "HTML"],
+};
+
+const sameRef = original;                 // (1) 複製的是位址
+const shallow = { ...original };          // (2) 淺層複製
+const deep = structuredClone(original);   // (3) 深層複製
+
+sameRef.name = "Cindy";        // 改到 original 本身
+shallow.skills.push("CSS");    // skills 陣列與 original 共用
+deep.skills.push("Vue");       // deep 擁有獨立的 skills 陣列
+
+console.log(original.name);        // "Cindy"
+console.log(original.skills);      // ["JavaScript", "HTML", "CSS"]
+console.log(deep.skills);          // ["JavaScript", "HTML", "Vue"]
+console.log(original === sameRef); // true
+```
+
+**詳解：**
+
+1. `sameRef = original`：只複製位址，兩者是同一個物件的兩個名字，所以改 `sameRef.name` 會影響 `original`。
+2. `shallow`：第一層屬性被複製，但 `skills` 是陣列，複製的是位址，所以 `shallow.skills` 與 `original.skills` 是同一個陣列。注意 `shallow.name` 之後若修改，則不會影響 `original`。
+3. `deep`：`structuredClone` 連巢狀的物件、陣列都建立新的一份，與 `original` 完全獨立，因此 `push("Vue")` 只影響 `deep.skills`。
+
+</details>
+
+#### 實作 2：把原生計數器改寫成「資料 / 畫面 / 事件」分離的結構
+
+請寫一個**原生 JavaScript** 版本的「+1 / −1 / 歸零」計數器，要求：
+
+1. HTML 有一個顯示數字的 `<div id="count">` 與三個按鈕：`+1`、`-1`、`重置`。
+2. 程式碼用註解明確分成：**資料**、**畫面元素**、**畫面渲染（`render`）**、**事件處理**四段。
+3. 每次資料改變後都要更新畫面。
+4. 完成後，再簡短說明若改用 Vue 會少寫哪些程式碼。
+
+<details>
+<summary>答案與詳解</summary>
+
+**原生 JavaScript 參考解答：**
+
+```html
+<div>
+  <div id="count"></div>
+  <button type="button" id="add">+1</button>
+  <button type="button" id="minus">-1</button>
+  <button type="button" id="reset">重置</button>
+</div>
+
+<script>
+  // ===== 資料 (State) =====
+  let count = 0;
+
+  // ===== 畫面元素 (View) =====
+  const countEl = document.getElementById("count");
+  const addBtn = document.getElementById("add");
+  const minusBtn = document.getElementById("minus");
+  const resetBtn = document.getElementById("reset");
+
+  // ===== 畫面渲染 =====
+  function render() {
+    countEl.textContent = count;
+  }
+
+  // ===== 事件處理 (Action) =====
+  addBtn.addEventListener("click", () => {
+    count++;
+    render();
+  });
+  minusBtn.addEventListener("click", () => {
+    count--;
+    render();
+  });
+  resetBtn.addEventListener("click", () => {
+    count = 0;
+    render();
+  });
+
+  render(); // 初始畫面
+</script>
+```
+
+**Vue 版本會省略的部分：**
+
+```html
+<div id="app">
+  <div>{{ count }}</div>
+  <button type="button" @click="count++">+1</button>
+  <button type="button" @click="count--">-1</button>
+  <button type="button" @click="count = 0">重置</button>
+</div>
+```
+
+- 不需要 `getElementById` 取元素（用 `{{ count }}` 綁定）。
+- 不需要 `addEventListener`（用 `@click`）。
+- **不需要手動呼叫 `render()`**：資料（`ref`）變了，畫面自動更新。
+
+**評分重點：** 資料、畫面、事件三段是否分開；每個事件處理後是否有呼叫 `render()`（漏掉就會出現「資料變了、畫面沒變」的 bug）。
+
+</details>

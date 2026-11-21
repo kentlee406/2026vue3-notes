@@ -436,3 +436,354 @@ import getData, { BASE_URL } from "./api.js";   // 預設 + 具名
 2. **Promise** 有三種狀態：Pending → Fulfilled（`resolve`、`.then`）或 Rejected（`reject`、`.catch`），`.finally` 一定會執行。
 3. **async/await** 是 Promise 的語法糖，用 `try...catch` 處理錯誤，可讀性較佳。
 4. **ES Module** 讓程式依功能拆檔：`export` 提供、`import` 取用；具名要 `{}` 且同名，預設不用 `{}` 可改名，命名空間用 `* as`。
+
+---
+
+## 📝 練習題
+
+> 範圍：2.1 Promise、2.2 Axios 與 async/await、2.3 ES Module
+> 建議做法：先自己作答，再展開「答案與詳解」對照。
+
+---
+
+### 一、選擇題（共 10 題）
+
+#### Q1. 下列程式的輸出順序為何？
+
+```js
+console.log("A");
+setTimeout(() => console.log("B"), 0);
+console.log("C");
+```
+
+- (A) A → B → C
+- (B) A → C → B
+- (C) B → A → C
+- (D) C → A → B
+
+<details>
+<summary>答案與詳解</summary>
+
+**答案：(B)**
+
+`setTimeout` 的回呼即使是 0 毫秒，也會先交給 Web APIs，之後進入 Queue 排隊，必須等同步程式（A、C）執行完、Call Stack 清空後，Event Loop 才會把它取回執行。
+
+</details>
+
+#### Q2. 關於 Event Loop 的描述，何者正確？
+
+- (A) 它讓 JavaScript 能同時執行多件事
+- (B) 它不斷檢查 Call Stack 是否為空，空了就從 Queue 取出回呼執行
+- (C) 它負責執行 `setTimeout` 的計時工作
+- (D) 它會中斷正在執行的同步程式，優先處理回呼
+
+<details>
+<summary>答案與詳解</summary>
+
+**答案：(B)**
+
+JavaScript 是單執行緒，一次只做一件事，非同步只是「不傻等」。計時由瀏覽器的 Web APIs 負責；Event Loop 只在 Call Stack 清空時才取回呼，不會中斷同步程式。
+
+</details>
+
+#### Q3. Promise 的三種狀態與轉換，何者正確？
+
+- (A) Pending → Fulfilled 之後還可以再變成 Rejected
+- (B) 呼叫 `resolve()` 使狀態變為 Fulfilled，呼叫 `reject()` 使狀態變為 Rejected
+- (C) `new Promise` 建立後狀態立即為 Fulfilled
+- (D) `.finally()` 只在 Rejected 時執行
+
+<details>
+<summary>答案與詳解</summary>
+
+**答案：(B)**
+
+剛建立時是 Pending；一旦變成 Fulfilled 或 Rejected 就**不會再改變**（承諾不能反悔），所以 (A) 錯。`.finally()` 無論成功或失敗都會執行，(D) 錯。
+
+</details>
+
+#### Q4. 下列程式的輸出順序為何？
+
+```js
+const p = new Promise((resolve) => {
+  console.log("1");
+  resolve("2");
+});
+p.then((v) => console.log(v));
+console.log("3");
+```
+
+- (A) 1 → 2 → 3
+- (B) 1 → 3 → 2
+- (C) 3 → 1 → 2
+- (D) 2 → 1 → 3
+
+<details>
+<summary>答案與詳解</summary>
+
+**答案：(B)**
+
+`new Promise` 的 executor 會**立刻同步執行**，所以先印 `1`；`.then()` 的回呼是非同步的，會等同步程式（`console.log("3")`）做完才執行，所以 `3` 在 `2` 之前。
+
+</details>
+
+#### Q5. 下列程式的輸出為何？
+
+```js
+function task(ok) {
+  return new Promise((resolve, reject) => {
+    ok ? resolve("成功") : reject(new Error("失敗"));
+  });
+}
+
+task(false)
+  .then((r) => console.log("then:", r))
+  .catch((e) => console.log("catch:", e.message))
+  .finally(() => console.log("finally"));
+```
+
+- (A) `then: 成功` → `finally`
+- (B) `catch: 失敗` → `finally`
+- (C) `catch: 失敗`
+- (D) `then: 成功` → `catch: 失敗` → `finally`
+
+<details>
+<summary>答案與詳解</summary>
+
+**答案：(B)**
+
+Promise 被 `reject`，跳過 `.then()`，由 `.catch()` 處理並印出 `catch: 失敗`，最後 `.finally()` 不管成功失敗都會執行。
+
+</details>
+
+#### Q6. 在 Promise 鏈式呼叫中，要讓下一個 `.then()` 「等」第二個非同步任務完成，應該怎麼做？
+
+- (A) 在 `.then()` 內直接呼叫函式，不用 `return`
+- (B) 在 `.then()` 內 `return` 另一個 Promise
+- (C) 在 `.then()` 內使用 `setTimeout`
+- (D) 在 `.then()` 內使用 `try...catch`
+
+<details>
+<summary>答案與詳解</summary>
+
+**答案：(B)**
+
+`.then()` 內回傳另一個 Promise，下一個 `.then()` 就會等它完成才執行。若忘了 `return`，下一個 `.then()` 會馬上拿到 `undefined`，不會等待。
+
+</details>
+
+#### Q7. 關於 `async` / `await` 的描述，何者**錯誤**？
+
+- (A) `async` 函式一定回傳 Promise
+- (B) `await` 只能用在 `async` 函式內（模組頂層除外）
+- (C) `await` 會卡住整個網頁，直到結果回來
+- (D) `async/await` 是 Promise 的語法糖
+
+<details>
+<summary>答案與詳解</summary>
+
+**答案：(C)**
+
+`await` 只暫停**所在的那個函式**，不會卡住整個網頁，其他程式與畫面仍可運作。
+
+</details>
+
+#### Q8. 下列程式的問題為何？
+
+```js
+async function getData() {
+  const res = axios.get("/api/products");
+  console.log(res.data.products);
+}
+```
+
+- (A) 缺少 `try...catch`，一定會報錯
+- (B) 忘了 `await`，`res` 是 Promise 物件而不是資料，`res.data` 為 `undefined`
+- (C) `async` 函式不能使用 `axios`
+- (D) `console.log` 不能放在 `async` 函式裡
+
+<details>
+<summary>答案與詳解</summary>
+
+**答案：(B)**
+
+忘記寫 `await` 是初學者常見錯誤：拿到的是 Promise，不是回應資料。`res.data` 為 `undefined`，接著讀 `.products` 會拋出 `TypeError`。應改為 `const res = await axios.get(...)`。(A) 只是缺少錯誤處理，並非這段程式的主要問題。
+
+</details>
+
+#### Q9. 已知 `utils.js` 如下，哪一個匯入寫法**正確**？
+
+```js
+// utils.js
+export const TAX = 0.05;
+export function formatPrice(price) {
+  return `NT$ ${price}`;
+}
+```
+
+- (A) `import utils from "./utils.js";`
+- (B) `import { tax } from "./utils.js";`
+- (C) `import { formatPrice as fp } from "./utils.js";`
+- (D) `import TAX from "./utils.js";`
+
+<details>
+<summary>答案與詳解</summary>
+
+**答案：(C)**
+
+這兩個都是**具名匯出**，匯入時要加 `{}` 且名稱必須相同（大小寫也要一致），想改名要用 `as`。(A)(D) 是預設匯入寫法，但此檔案沒有 `export default`；(B) 名稱大小寫錯誤（`tax` ≠ `TAX`）。
+
+</details>
+
+#### Q10. 下列哪一個匯入寫法，最可能對應 `export default` 的模組？
+
+- (A) `import { ref } from "vue";`
+- (B) `import axios from "axios";`
+- (C) `import * as utils from "./utils.js";`
+- (D) `import { formatPrice, TAX } from "./utils.js";`
+
+<details>
+<summary>答案與詳解</summary>
+
+**答案：(B)**
+
+沒有 `{}` 的匯入就是預設匯入（`axios` 是預設匯出，名稱可自訂）。(A)(D) 是具名匯入；(C) 是命名空間匯入。口訣：**有 `{}` 是具名，沒有 `{}` 是預設。**
+
+</details>
+
+---
+
+### 二、實作題（共 2 題）
+
+#### 實作 1：自訂 Promise 與錯誤處理
+
+請完成下列需求：
+
+1. 寫一個函式 `checkAge(age)`，回傳 Promise，**模擬等待 1 秒**後：
+   - `age >= 18`：`resolve("成年，可以進入")`
+   - `age < 18`：`reject(new Error("未成年，禁止進入"))`
+2. 使用 `.then()` / `.catch()` / `.finally()` 呼叫 `checkAge(20)` 與 `checkAge(15)`，成功與失敗都要印出訊息，`finally` 印出 `"檢查完畢"`。
+3. 再用 **async/await + try...catch...finally** 改寫其中一個呼叫。
+
+<details>
+<summary>答案與詳解</summary>
+
+```js
+// 1. 自訂 Promise
+function checkAge(age) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (age >= 18) {
+        resolve("成年，可以進入");
+      } else {
+        reject(new Error("未成年，禁止進入"));
+      }
+    }, 1000);
+  });
+}
+
+// 2. Promise 寫法
+checkAge(20)
+  .then((msg) => console.log(msg)) // 成年，可以進入
+  .catch((err) => console.error(err.message))
+  .finally(() => console.log("檢查完畢"));
+
+checkAge(15)
+  .then((msg) => console.log(msg))
+  .catch((err) => console.error(err.message)) // 未成年，禁止進入
+  .finally(() => console.log("檢查完畢"));
+
+// 3. async/await 寫法
+async function run(age) {
+  try {
+    const msg = await checkAge(age);
+    console.log(msg);
+  } catch (err) {
+    console.error(err.message);
+  } finally {
+    console.log("檢查完畢");
+  }
+}
+
+run(15);
+```
+
+**詳解：**
+
+- 必須 `return new Promise(...)`，外面才能接 `.then()`。
+- executor 內成功呼叫 `resolve(值)`，失敗呼叫 `reject(錯誤)`，建議傳 `new Error()`，這樣可用 `err.message` 取得訊息。
+- `async/await` 中：`await` 取代 `.then()`，`try...catch` 取代 `.catch()`，`finally {}` 取代 `.finally()`。
+- 兩個 `checkAge` 同時呼叫，會各自等 1 秒，輸出順序可能交錯，這是非同步的正常現象。
+
+</details>
+
+#### 實作 2：模組化拆檔與串接 API
+
+請把下列功能拆成三個檔案，並使用 ES Module 組合：
+
+- `utils.js`：**具名匯出**常數 `API_BASE = "https://livejs-api.hexschool.io/api/livejs/v1/customer"` 與函式 `formatPrice(price)`（回傳 `NT$ 1,000` 格式，提示：`price.toLocaleString()`）。
+- `api.js`：**預設匯出**一個 `async` 函式 `getProducts(apiPath)`，使用 `axios` 取得 `${API_BASE}/${apiPath}/products` 並回傳 `response.data.products`。
+- `main.js`：匯入上面兩者，取得商品並把「商品名稱 - 價格」印出來。
+- 最後寫出 HTML 要如何載入 `main.js`。
+
+<details>
+<summary>答案與詳解</summary>
+
+**utils.js（具名匯出）**
+
+```js
+export const API_BASE =
+  "https://livejs-api.hexschool.io/api/livejs/v1/customer";
+
+export function formatPrice(price) {
+  return `NT$ ${price.toLocaleString()}`;
+}
+```
+
+**api.js（預設匯出）**
+
+```js
+import axios from "axios";
+import { API_BASE } from "./utils.js";
+
+export default async function getProducts(apiPath) {
+  const response = await axios.get(`${API_BASE}/${apiPath}/products`);
+  return response.data.products;
+}
+```
+
+**main.js（匯入使用）**
+
+```js
+import getProducts from "./api.js";          // 預設：不用 {}，名稱可自訂
+import { formatPrice } from "./utils.js";    // 具名：要 {}，名稱需相同
+
+async function init() {
+  try {
+    const products = await getProducts("kentlee406");
+    products.forEach((p) => {
+      console.log(`${p.title} - ${formatPrice(p.price)}`);
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+init();
+```
+
+**HTML**
+
+```html
+<script type="module" src="./main.js"></script>
+```
+
+**詳解：**
+
+1. `API_BASE`、`formatPrice` 是同一檔案的多個匯出，用**具名匯出**；`getProducts` 是 `api.js` 的「主角」，用 `export default`。
+2. 具名匯入要 `{}` 且名稱相同；預設匯入不用 `{}`，名稱可自訂（例如寫成 `import fetchList from "./api.js"` 也可以）。
+3. 在 HTML 使用模組必須加上 `type="module"`；瀏覽器直接開本機檔案會遇到 CORS 限制，建議用 Live Server 或 Vite 等開發伺服器執行。
+4. 實際只用瀏覽器 CDN 載入 `axios` 時，沒有 `import axios`，axios 是全域變數；若在專案中使用 `import axios from "axios"`，則需先 `npm install axios`（並透過 Vite 等工具打包）。
+5. `api.js` 因為是 `async` 函式，一定回傳 Promise，所以 `main.js` 要 `await`。
+
+</details>
