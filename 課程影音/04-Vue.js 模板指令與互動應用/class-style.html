@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>搭配Class與Style的綁定方式</title>
+    <style>
+      .box {
+        padding: 12px 20px;
+        margin: 8px 0;
+        border: 2px solid #999;
+      }
+      .active {
+        background-color: #d1f7d6;
+      }
+      .bold {
+        font-weight: bold;
+      }
+      .error {
+        border-color: crimson;
+        color: crimson;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <h1>Class 與 Style 綁定</h1>
+
+      <!-- 1. :class 物件語法：屬性值為 true 才加上該 class -->
+      <div class="box" :class="{ active: isActive, error: hasError }">物件語法 :class</div>
+
+      <!-- 2. :class 陣列語法：陣列內的值都會成為 class -->
+      <div class="box" :class="[activeClass, { bold: isBold }]">陣列語法 :class</div>
+
+      <!-- 3. :style 物件語法：屬性名稱用駝峰式（camelCase） -->
+      <div class="box" :style="{ color: textColor, fontSize: fontSize + 'px' }">物件語法 :style</div>
+
+      <!-- 4. :style 綁定整個樣式物件 -->
+      <div class="box" :style="styleObject">綁定樣式物件 :style</div>
+
+      <button type="button" @click="isActive = !isActive">切換 active</button>
+      <button type="button" @click="hasError = !hasError">切換 error</button>
+      <button type="button" @click="fontSize += 2">字體 +2</button>
+    </div>
+
+    <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.prod.js"></script>
+    <script>
+      const { createApp, ref, reactive } = Vue;
+
+      createApp({
+        setup() {
+          const isActive = ref(true);
+          const hasError = ref(false);
+          const isBold = ref(true);
+          const activeClass = ref('active');
+          const textColor = ref('royalblue');
+          const fontSize = ref(18);
+          const styleObject = reactive({
+            color: 'white',
+            backgroundColor: 'teal',
+          });
+
+          return { isActive, hasError, isBold, activeClass, textColor, fontSize, styleObject };
+        },
+      }).mount('#app');
+    </script>
+  </body>
+</html>
