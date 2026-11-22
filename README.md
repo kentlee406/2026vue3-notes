@@ -7,9 +7,14 @@
 ## 補充資料
 
 [01-筆記列表整理](補充資料/01-筆記列表整理.md)
+
 [02-三大框架比較](補充資料/02-三大框架比較.md)
+
 [03-Composition API vs Option API](<補充資料/03-Composition API vs Option API.md>)
+
 [04-ref vs reactive](<補充資料/04-ref vs reactive.md>)
+
+[05-SFC](補充資料/05-SFC.md)
 
 ## 課前影音
 

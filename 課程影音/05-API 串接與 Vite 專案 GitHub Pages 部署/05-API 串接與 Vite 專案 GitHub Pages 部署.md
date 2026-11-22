@@ -28,7 +28,7 @@
 
 > 簡單比喻：前端是客人，API是服務生，後端與資料庫是廚房。客人不會直接進廚房，而是透過服務生點餐與取餐。
 
-[課程API申請](https://vue3-course-api.hexschool.com/)
+[課程API申請](https://vue3-course-api.hexschool.io/)
 
 ### 5.1.1 Vite環境變數配置
 
