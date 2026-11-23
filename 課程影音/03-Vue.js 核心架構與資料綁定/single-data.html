@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>單筆資料與雙向綁定</title>
+</head>
+<body>
+  <div id="app">
+    <h1>甜點訂購</h1>
+
+    <label>
+      品項：
+      <input type="text" v-model="dessert" placeholder="請輸入甜點名稱">
+    </label>
+    <p>你輸入的是：{{ dessert }}</p>
+
+    <button type="button" @click="reset">重設為草莓蛋糕</button>
+  </div>
+
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.prod.js"></script>
+  <script>
+    const { createApp, ref } = Vue;
+
+    createApp({
+      setup() {
+        // 1. 資料：單筆資料用 ref
+        const dessert = ref('草莓蛋糕');
+
+        // 2. 功能：在 <script> 中修改資料要用 .value
+        const reset = () => {
+          dessert.value = '草莓蛋糕';
+        };
+
+        return { dessert, reset };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>

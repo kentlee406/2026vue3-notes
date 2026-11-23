@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>多筆資料呈現</title>
+</head>
+<body>
+  <div id="app">
+    <h1>甜點訂購</h1>
+
+    <!-- 物件：一筆資料有多個欄位（reactive） -->
+    <h2>新增甜點</h2>
+    <form @submit.prevent="addDessert">
+      <input type="text" v-model.trim="form.name" placeholder="名稱">
+      <input type="number" v-model.number="form.price" placeholder="價格">
+      <button type="submit">新增</button>
+    </form>
+    <p>輸入中：{{ form.name }} / NT$ {{ form.price }}</p>
+
+    <!-- 陣列：多筆資料（ref） -->
+    <h2>甜點清單（共 {{ desserts.length }} 筆）</h2>
+    <ul>
+      <li v-for="item in desserts" :key="item.id">
+        {{ item.name }} - NT$ {{ item.price }}
+      </li>
+    </ul>
+  </div>
+
+  <script src="https://unpkg.com/vue@3.5.13/dist/vue.global.prod.js"></script>
+  <script>
+    const { createApp, ref, reactive } = Vue;
+
+    createApp({
+      setup() {
+        // 多筆資料：陣列用 ref，每一筆是一個物件
+        const desserts = ref([
+          { id: 1, name: '草莓蛋糕', price: 120 },
+          { id: 2, name: '提拉米蘇', price: 150 },
+          { id: 3, name: '布丁', price: 60 }
+        ]);
+
+        // 表單資料：一個物件、多個欄位，用 reactive（不需要 .value）
+        const form = reactive({ name: '', price: null });
+
+        const addDessert = () => {
+          if (!form.name || form.price === null) return;
+          desserts.value.push({ id: Date.now(), name: form.name, price: form.price });
+          form.name = '';
+          form.price = null;
+        };
+
+        return { desserts, form, addDessert };
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>

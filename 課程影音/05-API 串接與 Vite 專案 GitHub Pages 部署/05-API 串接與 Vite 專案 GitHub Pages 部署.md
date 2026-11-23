@@ -82,15 +82,15 @@ Vite常用終端機指令
 npm install gh-pages --save-dev
 ```
 
-2. 設定`vite.config.js`的`base`為`/Repo名稱/`（以下以Repo名稱`vite-react-project`為例）
+2. 設定`vite.config.js`的`base`為`/Repo名稱/`（以下以Repo名稱`vite-vue-project`為例）
 
 ```js
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import vue from "@vitejs/plugin-vue";
 
 export default defineConfig({
-  base: "/vite-react-project/",
-  plugins: [react()],
+  base: "/vite-vue-project/",
+  plugins: [vue()],
 });
 ```
 
@@ -115,7 +115,7 @@ export default defineConfig({
 npm run deploy
 ```
 
-5. 到GitHub Repo的Settings/Pages設定來源分支（Branch選`gh-pages`），等待片刻後即可取得網址，例如：`https://帳號.github.io/vite-react-project/`
+5. 到GitHub Repo的Settings/Pages設定來源分支（Branch選`gh-pages`），等待片刻後即可取得網址，例如：`https://帳號.github.io/vite-vue-project/`
 
 > 缺點：每次部署都需要在本機手動執行指令。
 
